@@ -19,10 +19,11 @@ public interface NoteMapper {
     @Update("UPDATE NOTES SET" +
         "notetitle = #{noteTitle}, " +
         "noteDescription = #{noteDescription}, " +
-        "userId = #{userId}")
+        "userId = #{userId} " +
+        "WHERE noteid = #{noteId}")
     boolean updateNote(Note note);
 
-    @Delete("DELETE FROM NOTES WHERE notetitle = #{noteTitle}")
-    boolean deleteNote(String noteTitle);
+    @Delete("DELETE FROM NOTES WHERE noteid = #{noteId}")
+    boolean deleteNote(Integer noteId);
 
 }
