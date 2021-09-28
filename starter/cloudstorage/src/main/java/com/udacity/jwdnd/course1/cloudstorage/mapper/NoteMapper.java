@@ -4,6 +4,8 @@ import org.apache.ibatis.annotations.*;
 
 import com.udacity.jwdnd.course1.cloudstorage.model.Note;
 
+import java.util.List;
+
 @Mapper
 public interface NoteMapper {
 
@@ -15,6 +17,9 @@ public interface NoteMapper {
 
     @Select("SELECT * FROM NOTES WHERE notetitle = #{noteTitle}")
     Note getNote(String noteTitle);
+
+    @Select("SELECT * FROM NOTES WHERE userid = #{userId}")
+    List<Note> getNotes(Integer userId);
 
     @Update("UPDATE NOTES SET" +
         "notetitle = #{noteTitle}, " +
