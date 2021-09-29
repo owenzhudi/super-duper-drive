@@ -28,7 +28,7 @@ public class SignupController {
     public String signupUser(@ModelAttribute User user, Model model, RedirectAttributes redirectAttributes) {
         int userId = -1;
 
-        if(userService.getUser(user.getUserName()) == null) {
+        if (userService.getUser(user.getUserName()) == null) {
             userId = userService.insertUser(user);
             redirectAttributes.addFlashAttribute("signupSuccess", true);
 
@@ -37,4 +37,5 @@ public class SignupController {
             model.addAttribute("signupSuccess", false);
             return "signup";
         }
+    }
 }

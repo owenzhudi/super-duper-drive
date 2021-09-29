@@ -34,7 +34,7 @@ public class Note {
         return userId;
     }
 
-    public void setUserid(Integer userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 }
