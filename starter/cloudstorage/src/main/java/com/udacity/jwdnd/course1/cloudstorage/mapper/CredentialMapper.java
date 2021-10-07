@@ -11,6 +11,7 @@ public interface CredentialMapper {
     @Insert("INSERT INTO CREDENTIALS " +
         "(url, username, key, password, userid) " +
         "VALUES (#{url}, #{username}, #{key}, #{password}, #{userId})")
+    @Options(useGeneratedKeys = true, keyProperty = "credentialId")
     Integer insertCredential(Credential credential);
 
     @Select("SELECT * FROM CREDENTIALS WHERE userid=#{userId}")
@@ -18,7 +19,7 @@ public interface CredentialMapper {
 
     @Update("UPDATE CREDENTIALS SET "
             + "url = #{url}, "
-            + "username = #{userName}, "
+            + "username = #{username}, "
             + "key = #{key}, "
             + "password = #{password} "
             + "WHERE credentialid = #{credentialId}")

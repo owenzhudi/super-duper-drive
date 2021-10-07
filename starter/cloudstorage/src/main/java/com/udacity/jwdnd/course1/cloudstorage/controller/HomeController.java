@@ -51,7 +51,7 @@ public class HomeController {
 
     @GetMapping()
     public String getHomePage(Model model, Authentication auth) {
-        int userId = userService.getUser(auth.getName()).getUserId();
+        Integer userId = userService.getUser(auth.getName()).getUserId();
 
         model.addAttribute("noteList",	noteService.getNotes(userId));
         model.addAttribute("credentialList", credentialService.getCredentials(userId));
@@ -76,13 +76,13 @@ public class HomeController {
     public String uploadFiles(@RequestParam("fileUpload") MultipartFile file, Model model,
                               RedirectAttributes redirectAttributes, Authentication auth) {
         boolean dbUpdated;
-        int userId = userService.getUser(auth.getName()).getUserId();
+        Integer userId = userService.getUser(auth.getName()).getUserId();
         String fileName = file.getOriginalFilename();
 
         redirectAttributes.addFlashAttribute("activeTab","files");
 
         try {
-            if(!fileName.isEmpty() && !fileService.fileExists(fileName)) {
+            if (!fileName.isEmpty() && !fileService.fileExists(fileName)) {
                 fileService.insertFile(new File(0, fileName, file.getContentType(), file.getSize(), userId, file.getBytes()));
                 dbUpdated = true;
             }
@@ -117,22 +117,22 @@ public class HomeController {
     public String updateNotes(@ModelAttribute Note note,Model model,
                               RedirectAttributes redirectAttributes, Authentication auth) {
         boolean dbUpdated;
-        int userId = userService.getUser(auth.getName()).getUserId();
+        Integer userId = userService.getUser(auth.getName()).getUserId();
 
         redirectAttributes.addFlashAttribute("activeTab", "notes");
         note.setUserId(userId);
 
         try {
-            if(note.getNoteId() == -1) {
+            if (note.getNoteId() == null) {
                 noteService.insertNote(note);
-            }
-            else {
+            } else {
                 noteService.updateNote(note);
             }
 
             dbUpdated = true;
 
         } catch (Exception e) {
+            e.printStackTrace();
             dbUpdated = false;
         }
 
@@ -140,7 +140,7 @@ public class HomeController {
     }
 
     @GetMapping("/notes/delete/{noteId}")
-    public String deleteNote(@PathVariable int noteId, Model model, RedirectAttributes redirectAttributes) {
+    public String deleteNote(@PathVariable Integer noteId, Model model, RedirectAttributes redirectAttributes) {
         boolean dbUpdated;
         redirectAttributes.addFlashAttribute("activeTab", "notes");
 
@@ -148,6 +148,7 @@ public class HomeController {
             noteService.deleteNote(noteId);
             dbUpdated = true;
         } catch (Exception e) {
+            e.printStackTrace();
             dbUpdated = false;
         }
 
@@ -158,7 +159,7 @@ public class HomeController {
     public String updateCredentials(@ModelAttribute Credential credential, Model model,
                                     RedirectAttributes redirectAttributes, Authentication auth) {
         boolean dbUpdated;
-        int userId = userService.getUser(auth.getName()).getUserId();
+        Integer userId = userService.getUser(auth.getName()).getUserId();
         SecureRandom sRandom = new SecureRandom();
         byte[] key = new byte[16];
         String encodedKey;
@@ -175,7 +176,7 @@ public class HomeController {
         redirectAttributes.addFlashAttribute("activeTab", "credentials");
 
         try {
-            if(credential.getCredentialId() == -1) {
+            if(credential.getCredentialId() == null) {
                 credentialService.insertCredential(credential);
             }
             else {
@@ -184,6 +185,7 @@ public class HomeController {
 
             dbUpdated = true;
         } catch (Exception e) {
+            e.printStackTrace();
             dbUpdated = false;
         }
 
@@ -200,6 +202,7 @@ public class HomeController {
             credentialService.deleteCredential(credentialId);
             dbUpdated = true;
         } catch (Exception e) {
+            e.printStackTrace();
             dbUpdated = false;
         }
 

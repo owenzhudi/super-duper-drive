@@ -10,6 +10,7 @@ public interface FileMapper {
     @Insert("INSERT INTO FILES " +
         "(filename, contenttype, filesize, userid, filedata) " +
         "VALUES (#{fileName}, #{contentType}, #{fileSize}, #{userId}, #{fileData})")
+    @Options(useGeneratedKeys = true, keyProperty = "fileId")
     Integer insertFile(File file);
 
     @Select("SELECT * FROM FILES WHERE fileid = #{fileId}")

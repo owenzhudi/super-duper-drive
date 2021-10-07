@@ -11,7 +11,7 @@ public interface NoteMapper {
 
     @Insert("INSERT INTO NOTES " +
         "(notetitle, notedescription, userid) " +
-        "VALUES (#{noteTitle}, #{noteDescription} #{userId})")
+        "VALUES (#{noteTitle}, #{noteDescription}, #{userId})")
     @Options(useGeneratedKeys = true, keyProperty = "noteId")
     Integer insertNote(Note note);
 
@@ -21,10 +21,10 @@ public interface NoteMapper {
     @Select("SELECT * FROM NOTES WHERE userid = #{userId}")
     List<Note> getNotes(Integer userId);
 
-    @Update("UPDATE NOTES SET" +
+    @Update("UPDATE NOTES SET " +
         "notetitle = #{noteTitle}, " +
-        "noteDescription = #{noteDescription}, " +
-        "userId = #{userId} " +
+        "notedescription = #{noteDescription}, " +
+        "userid = #{userId} " +
         "WHERE noteid = #{noteId}")
     boolean updateNote(Note note);
 

@@ -12,8 +12,8 @@ public class Credential {
         return credentialId;
     }
 
-    public void setCredentialId(Integer credientialId) {
-        this.credentialId = credientialId;
+    public void setCredentialId(Integer credentialId) {
+        this.credentialId = credentialId;
     }
 
     public String getUrl() {

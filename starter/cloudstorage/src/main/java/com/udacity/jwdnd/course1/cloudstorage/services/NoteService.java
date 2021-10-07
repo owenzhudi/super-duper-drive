@@ -14,7 +14,7 @@ public class NoteService {
         this.noteMapper = noteMapper;
     }
 
-    public int insertNote(Note note) {
+    public Integer insertNote(Note note) {
         return noteMapper.insertNote(note);
     }
 
