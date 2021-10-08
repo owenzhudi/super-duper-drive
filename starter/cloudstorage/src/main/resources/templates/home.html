@@ -140,8 +140,8 @@
                                         <a class="btn btn-danger delete-credential"  th:href="@{/home/credentials/delete/{credentialId}(credentialId=${credential.credentialId})}">Delete</a>
                                     </td>
                                     <th scope="row" class="saved-credential-url" th:text="${credential.url}">Example Credential URL</th>
-                                    <td th:text="${credential.username}">Example Credential Username</td>
-                                    <td th:text="${credential.password}">Example Credential Password</td>
+                                    <td th:text="${credential.username}" class="saved-credential-username">Example Credential Username</td>
+                                    <td th:text="${credential.password}" class="saved-credential-password">Example Credential Password</td>
                                 </tr>
                                 </tbody>
                             </table>

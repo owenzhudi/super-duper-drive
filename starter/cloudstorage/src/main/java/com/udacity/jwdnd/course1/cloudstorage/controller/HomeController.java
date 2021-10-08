@@ -62,7 +62,7 @@ public class HomeController {
     }
 
     @GetMapping("/files/view/{fileId}")
-    public ResponseEntity<Resource> getFile(@PathVariable int fileId, Model model, Authentication auth){
+    public ResponseEntity<Resource> getFile(@PathVariable Integer fileId){
         File file = fileService.getFile(fileId);
 
         return ResponseEntity.ok()
@@ -73,13 +73,10 @@ public class HomeController {
     }
 
     @PostMapping("/files/upload")
-    public String uploadFiles(@RequestParam("fileUpload") MultipartFile file, Model model,
-                              RedirectAttributes redirectAttributes, Authentication auth) {
+    public String uploadFiles(@RequestParam("fileUpload") MultipartFile file, Authentication auth) {
         boolean dbUpdated;
         Integer userId = userService.getUser(auth.getName()).getUserId();
         String fileName = file.getOriginalFilename();
-
-        redirectAttributes.addFlashAttribute("activeTab","files");
 
         try {
             if (!fileName.isEmpty() && !fileService.fileExists(fileName)) {
@@ -98,10 +95,9 @@ public class HomeController {
     }
 
     @GetMapping("/files/delete/{fileId}")
-    public String deleteFile(@PathVariable int fileId, Model model, RedirectAttributes redirectAttributes)
+    public String deleteFile(@PathVariable int fileId)
     {
         boolean dbUpdated;
-        redirectAttributes.addFlashAttribute("activeTab", "files");
 
         try {
             fileService.deleteFile(fileId);
@@ -114,12 +110,10 @@ public class HomeController {
     }
 
     @PostMapping("/notes/update")
-    public String updateNotes(@ModelAttribute Note note,Model model,
-                              RedirectAttributes redirectAttributes, Authentication auth) {
+    public String updateNotes(@ModelAttribute Note note, Authentication auth) {
         boolean dbUpdated;
         Integer userId = userService.getUser(auth.getName()).getUserId();
 
-        redirectAttributes.addFlashAttribute("activeTab", "notes");
         note.setUserId(userId);
 
         try {
@@ -140,9 +134,8 @@ public class HomeController {
     }
 
     @GetMapping("/notes/delete/{noteId}")
-    public String deleteNote(@PathVariable Integer noteId, Model model, RedirectAttributes redirectAttributes) {
+    public String deleteNote(@PathVariable Integer noteId) {
         boolean dbUpdated;
-        redirectAttributes.addFlashAttribute("activeTab", "notes");
 
         try {
             noteService.deleteNote(noteId);
@@ -155,9 +148,8 @@ public class HomeController {
         return "redirect:/home/result?success=" + dbUpdated;
     }
 
-    @PostMapping("credentials/update")
-    public String updateCredentials(@ModelAttribute Credential credential, Model model,
-                                    RedirectAttributes redirectAttributes, Authentication auth) {
+    @PostMapping("/credentials/update")
+    public String updateCredentials(@ModelAttribute Credential credential, Authentication auth) {
         boolean dbUpdated;
         Integer userId = userService.getUser(auth.getName()).getUserId();
         SecureRandom sRandom = new SecureRandom();
@@ -172,8 +164,6 @@ public class HomeController {
         credential.setKey(encodedKey);
         credential.setPassword(encryptedPassword);
         credential.setUserId(userId);
-
-        redirectAttributes.addFlashAttribute("activeTab", "credentials");
 
         try {
             if(credential.getCredentialId() == null) {
@@ -194,9 +184,8 @@ public class HomeController {
     }
 
     @GetMapping("/credentials/delete/{credentialId}")
-    public String deleteCredential(@PathVariable int credentialId, Model model, RedirectAttributes redirectAttributes) {
+    public String deleteCredential(@PathVariable Integer credentialId) {
         boolean dbUpdated;
-        redirectAttributes.addFlashAttribute("activeTab", "credentials");
 
         try {
             credentialService.deleteCredential(credentialId);

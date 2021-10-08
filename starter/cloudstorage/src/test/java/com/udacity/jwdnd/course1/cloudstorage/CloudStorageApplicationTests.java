@@ -9,12 +9,16 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import java.util.List;
+
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CloudStorageApplicationTests {
 
 	private static final String FIRST_NAME = "Test";
 	private static final String LAST_NAME = "User";
-	private static final String USERNAME = "testuser";
+	private static final String USERNAME = "user";
 	private static final String PASSWORD = "password";
 
 	@LocalServerPort
@@ -40,196 +44,191 @@ class CloudStorageApplicationTests {
 	}
 
 	@Test
-	public void getLoginPage() {
-		driver.get("http://localhost:" + this.port + "/login");
-		Assertions.assertEquals("Login", driver.getTitle());
+	@Order(1)
+	public void testUnauthorizedUser() {
+		String homeUrl = "http://localhost:" + this.port + "/home";
+		String loginUrl = "http://localhost:" + this.port + "/login";
+		driver.get(homeUrl);
+
+		Assertions.assertEquals(driver.getCurrentUrl(), loginUrl);
 	}
 
 	@Test
-	public void getHomePageUnauthorized() throws InterruptedException {
-		driver.get(String.format("http://localhost:%d/home", this.port));
+	@Order(2)
+	public void testSignupUser() throws InterruptedException {
+		String homeUrl = "http://localhost:" + this.port + "/home";
+		String loginUrl = "http://localhost:" + this.port + "/login";
+		signupUser();
+		loginUser();
+
+		Assertions.assertEquals(driver.getCurrentUrl(), homeUrl);
+
+		WebElement logout = driver.findElement(By.id("logout"));
+		logout.click();
 		Thread.sleep(1000);
-		Assertions.assertEquals("Login", driver.getTitle());
+		Assertions.assertEquals(driver.getCurrentUrl(), loginUrl + "?logout");
+
+		driver.get(homeUrl);
+		Thread.sleep(1000);
+		Assertions.assertEquals(driver.getCurrentUrl(), loginUrl);
 	}
 
 	@Test
-	public void newUserFlow() throws InterruptedException {
-		signUp();
-		login();
-
-		Assertions.assertEquals("Home", driver.getTitle());
-
-		WebElement element = driver.findElement(By.id("logout"));
-		element.click();
-		Thread.sleep(1000);
-
-		Assertions.assertEquals("Login", driver.getTitle());
-
-		driver.get(String.format("http://localhost:%d/home", this.port));
-		Thread.sleep(1000);
-		Assertions.assertEquals("Login", driver.getTitle());
-	}
-
-	private void signUp() throws InterruptedException {
-		driver.get(String.format("http://localhost:%d/signup", this.port));
-		Thread.sleep(1000);
-
-		WebElement element = driver.findElement(By.id("inputFirstName"));
-		element.sendKeys(FIRST_NAME);
-
-		element = driver.findElement(By.id("inputLastName"));
-		element.sendKeys(LAST_NAME);
-
-		element = driver.findElement(By.id("inputUsername"));
-		element.sendKeys(USERNAME);
-
-		element = driver.findElement(By.id("inputPassword"));
-		element.sendKeys(PASSWORD);
-
-		element = driver.findElement(By.id("signup"));
-		element.click();
-		Thread.sleep(1000);
-	}
-
-	private void login() throws InterruptedException {
-		driver.get(String.format("http://localhost:%d/login", this.port));
-		Thread.sleep(1000);
-
-		WebElement element = driver.findElement(By.id("inputUsername"));
-		element.sendKeys(USERNAME);
-
-		element = driver.findElement(By.id("inputPassword"));
-		element.sendKeys(PASSWORD);
-
-		element = driver.findElement(By.id("login"));
-		element.click();
-		Thread.sleep(1000);
-	}
-
-	@Test
-	public void notesFlowTest() throws InterruptedException {
-		signUp();
-		login();
+	@Order(3)
+	public void testNoteCreate() throws InterruptedException {
+		loginUser();
 
 		WebElement notesTab = driver.findElement(By.id("nav-notes-tab"));
 		notesTab.click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 
 		WebElement showNoteModel = driver.findElement(By.id("show-note-modal"));
 		showNoteModel.click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 
 		WebElement noteTitle = driver.findElement(By.id("note-title"));
-		noteTitle.sendKeys("TestNoteTitle");
+		noteTitle.sendKeys("note title test");
 
 		WebElement noteDescription = driver.findElement(By.id("note-description"));
-		noteDescription.sendKeys("TestNoteDescription");
+		noteDescription.sendKeys("note description");
 
 		WebElement saveNote = driver.findElement(By.id("save-note"));
 		saveNote.click();
 		Thread.sleep(1000);
 
-		WebElement homeReturn = driver.findElement(By.id("return-home"));
-		homeReturn.click();
-		Thread.sleep(500);
+		WebElement success = driver.findElement(By.tagName("h1"));
+		String text = success.getText();
+		Assertions.assertEquals(text, "Success");
 
-		WebElement notesTab1 = driver.findElement(By.id("nav-notes-tab"));
-		notesTab1.click();
-		Thread.sleep(500);
+		WebElement goHome = driver.findElement(By.id("go-home"));
+		goHome.click();
+		Thread.sleep(1000);
+
+		WebElement notesTabNew = driver.findElement(By.id("nav-notes-tab"));
+		notesTabNew.click();
+		Thread.sleep(1000);
 
 		WebElement savedNote = driver.findElement(By.cssSelector("th.note-title-row"));
-		Assertions.assertEquals("TestNoteTitle", savedNote.getText());
-		Thread.sleep(500);
+		Assertions.assertEquals(savedNote.getText(), "note title test");
+	}
+
+	@Test
+	@Order(4)
+	public void testNoteEdit() throws InterruptedException {
+		loginUser();
+
+		WebElement notesTab = driver.findElement(By.id("nav-notes-tab"));
+		notesTab.click();
+		Thread.sleep(1000);
 
 		WebElement editNote = driver.findElement(By.cssSelector("button.edit-note"));
 		editNote.click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 
-		WebElement noteTitle1 = driver.findElement(By.id("note-title"));
-		noteTitle1.sendKeys("Edit");
-		WebElement saveNote1 = driver.findElement(By.id("save-note"));
-		saveNote1.click();
+		WebElement noteTitle = driver.findElement(By.id("note-title"));
+		noteTitle.sendKeys(" edit");
+		WebElement saveNote = driver.findElement(By.id("save-note"));
+		saveNote.click();
 		Thread.sleep(1000);
 
 
-		WebElement homeReturn1 = driver.findElement(By.id("return-home"));
-		homeReturn1.click();
+		WebElement goHome = driver.findElement(By.id("go-home"));
+		goHome.click();
 		Thread.sleep(1000);
 
-		WebElement notesTab2 = driver.findElement(By.id("nav-notes-tab"));
-		notesTab2.click();
-		Thread.sleep(500);
+		WebElement notesTabNew = driver.findElement(By.id("nav-notes-tab"));
+		notesTabNew.click();
+		Thread.sleep(1000);
 
-		WebElement savedNote1 = driver.findElement(By.cssSelector("th.note-title-row"));
-		Assertions.assertEquals("TestNoteTitleEdit", savedNote1.getText());
+		WebElement savedNote = driver.findElement(By.cssSelector("th.note-title-row"));
+		Assertions.assertEquals(savedNote.getText(), "note title test edit");
+	}
+
+	@Test
+	@Order(5)
+	public void testNoteDelete() throws InterruptedException {
+		loginUser();
+
+		WebElement notesTab = driver.findElement(By.id("nav-notes-tab"));
+		notesTab.click();
+		Thread.sleep(1000);
 
 		WebElement deleteNote = driver.findElement(By.cssSelector("a.delete-note"));
 		deleteNote.click();
 		Thread.sleep(1000);
 
-		WebElement homeReturn2 = driver.findElement(By.id("return-home"));
-		homeReturn2.click();
-		Thread.sleep(1000);
-
-		WebElement notesTab3 = driver.findElement(By.id("nav-notes-tab"));
-		notesTab3.click();
-		Thread.sleep(500);
-
-		boolean isNoteEmpty = driver.findElements(By.cssSelector("th.note-title-row")).isEmpty();
-		Assertions.assertTrue(isNoteEmpty);
+		List<WebElement> noteTitleList = driver.findElements(By.className("note-title-row"));
+		Assertions.assertTrue(noteTitleList.isEmpty());
 	}
 
 	@Test
-	public void credentialFlowTest() throws InterruptedException {
-		signUp();
-		login();
+	@Order(6)
+	public void testCredentialCreate() throws InterruptedException {
+		loginUser();
 
 		WebElement credentialsTab = driver.findElement(By.id("nav-credentials-tab"));
 		credentialsTab.click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 
 		WebElement showCredentialsModel = driver.findElement(By.id("show-credentials-modal"));
 		showCredentialsModel.click();
-		Thread.sleep(500);
+		Thread.sleep(1000);
 
 		WebElement credentialUrl = driver.findElement(By.id("credential-url"));
-		credentialUrl.sendKeys("www.test.com");
+		credentialUrl.sendKeys("www.google.com");
 
 		WebElement credentialUsername = driver.findElement(By.id("credential-username"));
-		credentialUsername.sendKeys("testUsername");
+		credentialUsername.sendKeys("username");
 
 		WebElement credentialPassword = driver.findElement(By.id("credential-password"));
-		credentialPassword.sendKeys("testPassword");
+		credentialPassword.sendKeys("password");
 
 		WebElement credentialSubmit = driver.findElement(By.id("credential-submit"));
 		credentialSubmit.click();
 		Thread.sleep(1000);
 
-		WebElement homeReturn = driver.findElement(By.id("return-home"));
-		homeReturn.click();
+		WebElement goHome = driver.findElement(By.id("go-home"));
+		goHome.click();
+		Thread.sleep(1000);
+
+		WebElement credentialsTabNew = driver.findElement(By.id("nav-credentials-tab"));
+		credentialsTabNew.click();
+		Thread.sleep(1000);
+
+		WebElement savedCredentialUrl = driver.findElement(By.cssSelector("th.saved-credential-url"));
+		Assertions.assertEquals(savedCredentialUrl.getText(), "www.google.com" );
 		Thread.sleep(500);
 
-		WebElement credentialsTab1 = driver.findElement(By.id("nav-credentials-tab"));
-		credentialsTab1.click();
+		WebElement savedCredentialUsername = driver.findElement(By.cssSelector("td.saved-credential-username"));
+		Assertions.assertEquals(savedCredentialUsername.getText(), "username" );
 		Thread.sleep(500);
 
-		WebElement savedNote = driver.findElement(By.cssSelector("th.saved-credential-url"));
-		Assertions.assertEquals("www.test.com", savedNote.getText());
-		Thread.sleep(500);
+		WebElement savedCredentialPassword = driver.findElement(By.cssSelector("td.saved-credential-password"));
+		Assertions.assertNotEquals(savedCredentialPassword.getText(), "password");
+	}
+
+	@Test
+	@Order(7)
+	public void testCredentialEdit() throws InterruptedException {
+		loginUser();
+
+		WebElement credentialsTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialsTab.click();
+		Thread.sleep(1000);
 
 		WebElement editCredential = driver.findElement(By.cssSelector("button.edit-credential"));
 		editCredential.click();
 		Thread.sleep(500);
 
-		WebElement credentialUrl1 = driver.findElement(By.id("credential-url"));
-		credentialUrl1.sendKeys(".cn");
+		WebElement credentialUrl = driver.findElement(By.id("credential-url"));
+		credentialUrl.sendKeys(".cn");
 		WebElement saveCredential = driver.findElement(By.id("credential-submit"));
 		saveCredential.click();
 		Thread.sleep(1000);
 
 
-		WebElement homeReturn1 = driver.findElement(By.id("return-home"));
-		homeReturn1.click();
+		WebElement goHome = driver.findElement(By.id("go-home"));
+		goHome.click();
 		Thread.sleep(1000);
 
 		WebElement notesTab2 = driver.findElement(By.id("nav-credentials-tab"));
@@ -237,22 +236,69 @@ class CloudStorageApplicationTests {
 		Thread.sleep(500);
 
 		WebElement savedCredential = driver.findElement(By.cssSelector("th.saved-credential-url"));
-		Assertions.assertEquals("www.test.com.cn", savedCredential.getText());
+		Assertions.assertEquals(savedCredential.getText(), "www.google.com.cn");
+	}
+
+	@Test
+	@Order(8)
+	public void testCredentialDelete() throws InterruptedException {
+		loginUser();
+
+		WebElement credentialsTab = driver.findElement(By.id("nav-credentials-tab"));
+		credentialsTab.click();
+		Thread.sleep(1000);
 
 		WebElement deleteCredential = driver.findElement(By.cssSelector("a.delete-credential"));
 		deleteCredential.click();
 		Thread.sleep(1000);
 
-		WebElement homeReturn2 = driver.findElement(By.id("return-home"));
-		homeReturn2.click();
+		WebElement goHome = driver.findElement(By.id("go-home"));
+		goHome.click();
 		Thread.sleep(1000);
 
-		WebElement credentialTab3 = driver.findElement(By.id("nav-credentials-tab"));
-		credentialTab3.click();
+		WebElement credentialTabNew = driver.findElement(By.id("nav-credentials-tab"));
+		credentialTabNew.click();
 		Thread.sleep(500);
 
-		boolean isCredentialEmpty = driver.findElements(By.cssSelector("th.saved-credential-url"))
-				.isEmpty();
-		Assertions.assertTrue(isCredentialEmpty);
+		List<WebElement> credentialList = driver.findElements(By.cssSelector("th.saved-credential-url"));
+		Assertions.assertTrue(credentialList.isEmpty());
+	}
+
+	private void signupUser() throws InterruptedException {
+		driver.get("http://localhost:" + this.port + "/login");
+		Thread.sleep(1000);
+
+		WebElement signupLinkInLogin = driver.findElement(By.id("signup-in-login"));
+		signupLinkInLogin.click();
+		Thread.sleep(1000);
+
+		WebElement firstNameInput = driver.findElement(By.id("inputFirstName"));
+		firstNameInput.sendKeys(FIRST_NAME);
+
+		WebElement lastNameInput = driver.findElement(By.id("inputLastName"));
+		lastNameInput.sendKeys(LAST_NAME);
+
+		WebElement usernameInput = driver.findElement(By.id("inputUsername"));
+		usernameInput.sendKeys(USERNAME);
+
+		WebElement passwordInput = driver.findElement(By.id("inputPassword"));
+		passwordInput.sendKeys(PASSWORD);
+
+		WebElement signupButton = driver.findElement(By.id("signup"));
+		signupButton.click();
+	}
+
+	private void loginUser() throws InterruptedException {
+		driver.get("http://localhost:" + this.port + "/login");
+		Thread.sleep(1000);
+
+		WebElement usernameInput = driver.findElement(By.id("inputUsername"));
+		usernameInput.sendKeys(USERNAME);
+
+		WebElement passwordInput = driver.findElement(By.id("inputPassword"));
+		passwordInput.sendKeys(PASSWORD);
+
+		WebElement login = driver.findElement(By.id("login"));
+		login.click();
 	}
 }
