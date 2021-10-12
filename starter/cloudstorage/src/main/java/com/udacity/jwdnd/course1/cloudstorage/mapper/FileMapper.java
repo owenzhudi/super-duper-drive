@@ -17,14 +17,13 @@ public interface FileMapper {
     File getFile(Integer fileId);
 
     @Select("SELECT * FROM FILES WHERE userid = ${userId}")
-    List<File> getFiles(Integer userId);
+    List<File> getFilesByUserId(Integer userId);
 
-    @Select("SELECT EXISTS(SELECT 1 FROM FILES WHERE filename=#{fileName})")
+    @Select("SELECT EXISTS(SELECT * FROM FILES WHERE filename=#{fileName})")
     boolean fileExists(String fileName);
 
-    @Update("UPDATE FILES SET " +
-        "filename = #{fileName} " +
-        "content")
+    @Update("UPDATE FILES SET filename = #{fileName}, contentype = #{contentType}, filesize = #{fileSize}, filedata = #{fileData} " +
+            "WHERE fileid = #{fileId}")
     boolean updateFile(File file);
 
     @Delete("DELETE FROM FILES WHERE fileid = #{fileId}")

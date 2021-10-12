@@ -18,8 +18,8 @@ public class FileService {
         return fileMapper.insertFile(file);
     }
 
-    public List<File> getFiles(Integer userId){
-        return fileMapper.getFiles(userId);
+    public List<File> getFilesByUserId(Integer userId){
+        return fileMapper.getFilesByUserId(userId);
     }
 
     public File getFile(Integer fileId) {

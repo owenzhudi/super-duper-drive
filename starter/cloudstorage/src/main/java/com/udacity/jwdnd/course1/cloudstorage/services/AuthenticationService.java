@@ -26,11 +26,11 @@ public class AuthenticationService implements AuthenticationProvider {
         String password = authentication.getCredentials().toString();
         User storedUser = userMapper.getUser(userName);
 
-        if(storedUser != null) {
+        if (storedUser != null) {
             String storedSalt = storedUser.getSalt();
             String newHash = hashService.getHashedValue(password, storedSalt);
 
-            if(newHash.equals(storedUser.getPassword())) {
+            if (newHash.equals(storedUser.getPassword())) {
                 return new UsernamePasswordAuthenticationToken(userName, password, new ArrayList<>());
             }
         }
