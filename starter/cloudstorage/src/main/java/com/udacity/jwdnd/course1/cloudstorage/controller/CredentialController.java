@@ -25,9 +25,8 @@ public class CredentialController {
         this.encryptionService = encryptionService;
     }
 
-    @PostMapping("/update")
+    @PostMapping()
     public String updateCredentials(@ModelAttribute Credential credential, Authentication authentication, RedirectAttributes redirectAttributes) {
-        boolean dbUpdated;
         Integer userId = userService.getUser(authentication.getName()).getUserId();
         SecureRandom sRandom = new SecureRandom();
         byte[] key = new byte[16];

@@ -25,10 +25,8 @@ public class SignupController {
 
     @PostMapping
     public String signupUser(@ModelAttribute User user, Model model) {
-        Integer userId = null;
 
         if (userService.getUser(user.getUsername()) == null) {
-            userId = userService.insertUser(user);
             model.addAttribute("signupSuccess", true);
         } else {
             model.addAttribute("signupSuccess", false);

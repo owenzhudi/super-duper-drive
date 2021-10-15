@@ -19,6 +19,8 @@ public interface FileMapper {
     @Select("SELECT * FROM FILES WHERE userid = ${userId}")
     List<File> getFilesByUserId(Integer userId);
 
+    // Get the helper code to check file exists from:
+    // https://github.com/rrbiz662/super-duper-drive/blob/c4cbf33d6e79503e53337578ff9ee10799a6aa11/starter/cloudstorage/src/main/java/com/udacity/jwdnd/course1/cloudstorage/mapper/FileMapper.java#L31
     @Select("SELECT EXISTS(SELECT * FROM FILES WHERE filename=#{fileName})")
     boolean fileExists(String fileName);
 

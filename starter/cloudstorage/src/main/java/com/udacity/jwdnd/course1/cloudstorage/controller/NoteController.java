@@ -19,7 +19,7 @@ public class NoteController {
         this.userService = userService;
     }
 
-    @PostMapping("/update")
+    @PostMapping()
     public String updateNotes(@ModelAttribute Note note, Authentication authentication, RedirectAttributes redirectAttributes) {
         boolean dbUpdated;
         Integer userId = userService.getUser(authentication.getName()).getUserId();
@@ -37,6 +37,7 @@ public class NoteController {
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("success", false);
+            redirectAttributes.addFlashAttribute("errorMessage", "Error updating note!");
         }
 
         return "redirect:/result";
@@ -50,6 +51,7 @@ public class NoteController {
         } catch (Exception e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("success", false);
+            redirectAttributes.addFlashAttribute("errorMessage", "Error deleting note!");
         }
 
         return "redirect:/result";

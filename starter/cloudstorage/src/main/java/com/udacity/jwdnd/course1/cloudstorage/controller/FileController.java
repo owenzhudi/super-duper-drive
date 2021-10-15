@@ -25,7 +25,9 @@ public class FileController {
         this.userService = userService;
     }
 
-    @GetMapping("/view/{fileId}")
+    @GetMapping("/{fileId}")
+    // get the helper code for downloading files
+    // from: https://github.com/rrbiz662/super-duper-drive/blob/c4cbf33d6e79503e53337578ff9ee10799a6aa11/starter/cloudstorage/src/main/java/com/udacity/jwdnd/course1/cloudstorage/controller/HomeController.java#L64
     public ResponseEntity<Resource> downloadFile(@PathVariable Integer fileId){
         File file = fileService.getFile(fileId);
 
@@ -36,18 +38,20 @@ public class FileController {
 
     }
 
-    @PostMapping("/upload")
+    @PostMapping()
     public String uploadFiles(@RequestParam("fileUpload") MultipartFile file, Authentication auth, RedirectAttributes redirectAttributes) {
         Integer userId = userService.getUser(auth.getName()).getUserId();
         String fileName = file.getOriginalFilename();
 
         if (file.isEmpty() || fileName.isEmpty()) {
             redirectAttributes.addFlashAttribute("success", false);
+            redirectAttributes.addFlashAttribute("errorMessage", "File or file name is empty!");
             return "redirect:/result";
         }
 
         if (fileService.fileExists(fileName)) {
             redirectAttributes.addFlashAttribute("success", false);
+            redirectAttributes.addFlashAttribute("errorMessage", "File already exists!");
             return "redirect:/result";
         }
 
@@ -57,6 +61,7 @@ public class FileController {
 
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("success", false);
+            redirectAttributes.addFlashAttribute("errorMessage", "Error uploading file!");
         }
 
         return "redirect:/result";
@@ -70,6 +75,7 @@ public class FileController {
             redirectAttributes.addFlashAttribute("success", true);
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("success", false);
+            redirectAttributes.addFlashAttribute("errorMessage", "Error deleting file!");
         }
 
         return "redirect:/result";

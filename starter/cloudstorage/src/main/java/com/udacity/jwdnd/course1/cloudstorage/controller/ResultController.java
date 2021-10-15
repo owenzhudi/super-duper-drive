@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/result")
+@RequestMapping()
 public class ResultController {
-    @GetMapping()
+    @GetMapping("/result")
     public String getResult() {
 
         return "result";
