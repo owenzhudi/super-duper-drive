@@ -27,6 +27,7 @@ public class SignupController {
     public String signupUser(@ModelAttribute User user, Model model) {
 
         if (userService.getUser(user.getUsername()) == null) {
+            userService.insertUser(user);
             model.addAttribute("signupSuccess", true);
         } else {
             model.addAttribute("signupSuccess", false);
