@@ -11,7 +11,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 
 import java.util.List;
 
-
+// Get the hint from this github:
+// https://github.com/skb1129/super-duper-drive/blob/3ae900f96133933a31852b02a4ca6b7bc4a51a36/src/test/java/com/udacity/cloudstorage/CloudStorageApplicationTests.java
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class CloudStorageApplicationTests {
