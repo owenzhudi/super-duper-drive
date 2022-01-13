@@ -29,11 +29,11 @@ public class SignupController {
         if (userService.getUser(user.getUsername()) == null) {
             userService.insertUser(user);
             model.addAttribute("signupSuccess", true);
+            return "login";
         } else {
             model.addAttribute("signupSuccess", false);
+            model.addAttribute("submitted", true);
+            return "signup";
         }
-        model.addAttribute("submitted", true);
-
-        return "signup";
     }
 }
